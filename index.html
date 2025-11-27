@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joom Merchant API v3 ガイド（日本語版）</title>
+    <title>Joom Merchant API v3 完全ガイド（日本語版）</title>
     <style>
         * {
             margin: 0;
@@ -14,213 +14,560 @@
             font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
             line-height: 1.8;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: #f5f7fa;
         }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
         }
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-        }
-        header h1 {
-            font-size: 2.5em;
+        .sidebar h1 {
+            color: #fff;
+            font-size: 1.3em;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+        .sidebar .version {
+            color: #4ade80;
+            font-size: 0.85em;
+            margin-bottom: 20px;
+        }
+        .sidebar nav a {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 3px 0;
+            border-radius: 8px;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        .sidebar nav a:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .sidebar nav a.section-title {
+            color: #4ade80;
+            font-weight: bold;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            padding-left: 0;
+        }
+        .sidebar nav a.section-title:hover {
+            background: transparent;
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            max-width: 1200px;
         }
         .card {
             background: white;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
         .card h2 {
-            color: #667eea;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+            color: #1a1a2e;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #4ade80;
         }
         .card h3 {
-            color: #764ba2;
-            font-size: 1.2em;
+            color: #16213e;
+            font-size: 1.3em;
+            margin: 30px 0 15px;
+        }
+        .card h4 {
+            color: #333;
+            font-size: 1.1em;
             margin: 20px 0 10px;
         }
         .endpoint {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 15px;
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 15px 20px;
             margin: 15px 0;
             border-radius: 0 8px 8px 0;
         }
         .endpoint code {
-            background: #e9ecef;
+            background: #e2e8f0;
             padding: 3px 8px;
             border-radius: 4px;
             font-family: 'Monaco', 'Consolas', monospace;
-            color: #d63384;
+            font-size: 0.9em;
+            color: #0f172a;
         }
         .method {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 4px;
             font-weight: bold;
-            font-size: 0.85em;
+            font-size: 0.8em;
             margin-right: 10px;
+            font-family: monospace;
         }
-        .method.get { background: #28a745; color: white; }
-        .method.post { background: #007bff; color: white; }
-        .method.put { background: #ffc107; color: #333; }
-        .method.delete { background: #dc3545; color: white; }
-        ul {
+        .method.get { background: #22c55e; color: white; }
+        .method.post { background: #3b82f6; color: white; }
+        .method.put { background: #f59e0b; color: white; }
+        .method.delete { background: #ef4444; color: white; }
+        ul, ol {
             margin: 15px 0 15px 25px;
         }
         li {
             margin: 8px 0;
         }
         .highlight {
-            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             padding: 20px;
             border-radius: 10px;
             margin: 20px 0;
+            border-left: 4px solid #f59e0b;
+        }
+        .highlight.info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left-color: #3b82f6;
+        }
+        .highlight.warning {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left-color: #ef4444;
+        }
+        .highlight.success {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-left-color: #22c55e;
         }
         .code-block {
-            background: #2d3748;
+            background: #1e293b;
             color: #e2e8f0;
             padding: 20px;
             border-radius: 10px;
             overflow-x: auto;
             margin: 15px 0;
             font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 0.9em;
+            font-size: 0.85em;
+            line-height: 1.6;
         }
-        .code-block .comment { color: #68d391; }
-        .code-block .string { color: #fbd38d; }
-        .code-block .key { color: #90cdf4; }
+        .code-block .comment { color: #94a3b8; }
+        .code-block .string { color: #fde68a; }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .number { color: #a5b4fc; }
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
+            font-size: 0.95em;
         }
         th, td {
-            padding: 12px 15px;
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e2e8f0;
         }
         th {
-            background: #667eea;
+            background: #1e293b;
             color: white;
+            font-weight: 600;
         }
         tr:hover {
-            background: #f5f5f5;
+            background: #f8fafc;
         }
         .badge {
             display: inline-block;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-            margin: 5px;
+            font-size: 0.8em;
+            font-weight: 600;
         }
         .badge.required { background: #fee2e2; color: #dc2626; }
         .badge.optional { background: #dbeafe; color: #2563eb; }
+        .badge.success { background: #dcfce7; color: #16a34a; }
+        .badge.warning { background: #fef3c7; color: #d97706; }
+        .badge.error { background: #fee2e2; color: #dc2626; }
+        .status-code {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .status-code.s2xx { background: #dcfce7; color: #16a34a; }
+        .status-code.s4xx { background: #fef3c7; color: #d97706; }
+        .status-code.s5xx { background: #fee2e2; color: #dc2626; }
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+        .step-number {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-content h4 {
+            margin-top: 0;
+            color: #1e293b;
+        }
         footer {
             text-align: center;
-            color: white;
-            padding: 30px;
-            opacity: 0.9;
+            padding: 40px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
         }
         footer a {
-            color: white;
+            color: #3b82f6;
         }
-        .nav {
-            position: sticky;
-            top: 20px;
-            background: rgba(255,255,255,0.95);
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+            }
         }
-        .nav a {
-            color: #667eea;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        .nav a:hover {
-            color: #764ba2;
-        }
-        @media (max-width: 768px) {
-            header h1 { font-size: 1.8em; }
-            .nav { display: none; }
-            .card { padding: 20px; }
+        .toc-section {
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Joom Merchant API v3</h1>
-            <p>マーチャント向けAPI 日本語ガイド</p>
-        </header>
-
-        <nav class="nav">
+    <aside class="sidebar">
+        <h1>Joom Merchant API</h1>
+        <div class="version">v3.0</div>
+        <nav>
             <a href="#overview">概要</a>
-            <a href="#auth">認証</a>
-            <a href="#requests">リクエスト</a>
-            <a href="#products">商品</a>
-            <a href="#orders">注文</a>
-        </nav>
 
+            <a href="#" class="section-title">Getting Started</a>
+            <a href="#requests">リクエスト</a>
+            <a href="#responses">レスポンス</a>
+            <a href="#pagination">ページネーション</a>
+            <a href="#errors">APIエラー</a>
+            <a href="#data-formats">データフォーマット</a>
+            <a href="#rate-limits">レート制限</a>
+
+            <a href="#" class="section-title">認証</a>
+            <a href="#oauth">OAuth 2.0</a>
+            <a href="#auth-steps">認証手順</a>
+            <a href="#refresh-token">トークン更新</a>
+
+            <a href="#" class="section-title">API機能</a>
+            <a href="#products">商品（Products）</a>
+            <a href="#product-states">商品の状態</a>
+            <a href="#orders">注文（Orders）</a>
+            <a href="#order-states">注文の状態</a>
+            <a href="#shipping">配送先設定</a>
+            <a href="#warehouses">倉庫管理</a>
+
+            <a href="#" class="section-title">その他</a>
+            <a href="#migration">v2からの移行</a>
+            <a href="#sandbox">サンドボックス</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
         <section id="overview" class="card">
             <h2>概要</h2>
-            <p>Joom Merchant API v3は、マーチャントや開発者がJoomプラットフォームと連携するためのAPIです。このAPIを使用することで、Web版Joom for Merchantsの機能をプログラムから完全に操作できます。</p>
+            <p>このAPIドキュメントは、Joom for Merchants APIとの連携を構築するマーチャントや開発者向けに作成されています。Web版Joomの完全なプログラム可能な代替手段であり、商品作成と注文処理に関するすべての重要な基本情報が含まれています。</p>
 
-            <div class="highlight">
-                <strong>主な用途：</strong>
-                <ul>
-                    <li>商品の作成・管理</li>
-                    <li>注文の処理・発送</li>
-                    <li>ERPシステムとの連携</li>
-                    <li>在庫管理の自動化</li>
-                </ul>
+            <div class="highlight success">
+                <strong>このバージョンについて：</strong><br>
+                Joom API v3は現在の最新バージョンです。プラットフォームの新リリースをサポートするため、新機能や情報はここに追加されます。
             </div>
+        </section>
+
+        <section id="requests" class="card">
+            <h2>リクエスト</h2>
+            <p>このドキュメントのすべてのリクエストパスは相対パスです。</p>
 
             <h3>ベースURL</h3>
             <div class="endpoint">
                 <strong>本番環境：</strong><br>
                 <code>https://api-merchant.joom.com/api/v3</code>
             </div>
-            <p>※サンドボックス環境については公式ドキュメントを参照してください。</p>
+
+            <h3>重要なルール</h3>
+            <ul>
+                <li><strong>HTTPS必須：</strong>すべてのリクエストはHTTPSで行う必要があります。HTTPでのリクエストは拒否されます。</li>
+                <li><strong>Content-Type：</strong>JSONリクエストボディを受け付けるPOSTエンドポイントには、<code>Content-Type: application/json</code>ヘッダーが必要です。他のコンテンツタイプは受け付けられません。</li>
+            </ul>
         </section>
 
-        <section id="auth" class="card">
-            <h2>OAuth 2.0 認証</h2>
-            <p>JoomはOAuth 2.0認証を採用しており、セキュアなAPI連携を実現しています。これはFacebookやWeChatなどでログインする際と同じ認証プロセスです。</p>
+        <section id="responses" class="card">
+            <h2>レスポンス</h2>
 
-            <h3>主要な用語</h3>
+            <h3>HTTPステータスコード</h3>
+            <p>このAPIは、成功または失敗を示すために標準的なHTTPレスポンスコードを使用します。</p>
+
+            <table>
+                <tr>
+                    <th>コード</th>
+                    <th>意味</th>
+                    <th>トラブルシューティング</th>
+                </tr>
+                <tr>
+                    <td><span class="status-code s2xx">200</span></td>
+                    <td>成功</td>
+                    <td>すべて正常。レスポンスを取得してください。</td>
+                </tr>
+                <tr>
+                    <td><span class="status-code s4xx">400</span></td>
+                    <td>不正なリクエスト</td>
+                    <td>リクエストを修正する必要があります。JSONレスポンスのエラー詳細を確認してください。パラメータの誤り（例：JSON整数フィールドに文字列）や、リソースの現在の状態と矛盾する操作（例：キャンセル済み注文の発送処理）が原因の可能性があります。</td>
+                </tr>
+                <tr>
+                    <td><span class="status-code s4xx">401</span></td>
+                    <td>未認証</td>
+                    <td>有効なアクセストークンをリクエストに含めてください。</td>
+                </tr>
+                <tr>
+                    <td><span class="status-code s4xx">403</span></td>
+                    <td>アクセス禁止</td>
+                    <td>アクセス権のないリソースにアクセスしようとしています。例：あるストアとして認証されているが、別のストアの商品や注文にアクセスしようとしている場合。</td>
+                </tr>
+                <tr>
+                    <td><span class="status-code s4xx">404</span></td>
+                    <td>見つかりません</td>
+                    <td>存在しないリソースにアクセスしようとしています。例：skuパラメータにJoom Product IDを誤って使用した場合、そのSKUの商品は見つかりません。</td>
+                </tr>
+                <tr>
+                    <td><span class="status-code s4xx">429</span></td>
+                    <td>リクエスト過多</td>
+                    <td>リクエストレート制限を超えました。要件に従ってリクエスト制限を実装してください。</td>
+                </tr>
+                <tr>
+                    <td><span class="status-code s5xx">500</span></td>
+                    <td>内部サーバーエラー</td>
+                    <td>Joom側で問題が発生しました。しばらくしてからリクエストを再試行してください。問題は認識されており、修正に取り組んでいますが、時間がかかる場合があります。複数回の再試行後も継続する場合は、Joomマーチャントサポートに連絡してください。</td>
+                </tr>
+            </table>
+
+            <h3>Request ID</h3>
+            <p>Joom APIに関する問題をJoomマーチャントサポートに報告する際、該当リクエストのRequest IDの提供を求められる場合があります。</p>
+
+            <div class="code-block">
+<span class="comment">// 各レスポンスには以下のヘッダーが含まれます</span>
+request-id: {request ID}
+            </div>
+
+            <p>Request IDは英数字の短い文字列で、通常「j」で始まります。特定のリクエストの問題をJoom開発者がデバッグするのに役立つ一意の識別子です。</p>
+
+            <div class="highlight warning">
+                <strong>重要：</strong>Request IDをリクエストログに保存してください。問題報告時にRequest IDを提供しない場合、Joom開発者はケースを調査できない可能性があります。
+            </div>
+
+            <h3>レスポンススキーマ</h3>
+            <p>Joom APIからのすべてのレスポンスは、ファイルデータ（例：PDF）を含むものを除き、JSON形式です。</p>
+
+            <table>
+                <tr>
+                    <th>フィールド名</th>
+                    <th>型</th>
+                    <th>返却タイミング</th>
+                    <th>説明</th>
+                </tr>
+                <tr>
+                    <td><code>data</code></td>
+                    <td>object</td>
+                    <td>成功時（該当する場合）</td>
+                    <td>リクエストされたレスポンスデータ</td>
+                </tr>
+                <tr>
+                    <td><code>paging</code></td>
+                    <td>object</td>
+                    <td>成功時（該当する場合）</td>
+                    <td>結果数がリクエストの制限を超える場合、すべての結果をページングするのに役立つパラメータ</td>
+                </tr>
+                <tr>
+                    <td><code>errors</code></td>
+                    <td>array of objects</td>
+                    <td>エラー時</td>
+                    <td>リクエスト処理中に発生したエラーのリスト</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="pagination" class="card">
+            <h2>ページネーション</h2>
+            <p>一部のエンドポイントは複数のアイテムを返します。効率的なパフォーマンスのため、各リクエストで返される結果数を制限する必要があります。</p>
+
+            <h3>ルール</h3>
+            <ul>
+                <li><strong>デフォルト制限：</strong>リクエストあたり100件</li>
+                <li><strong>カスタム制限：</strong>クエリパラメータ<code>limit</code>で指定可能</li>
+                <li><strong>最大制限：</strong>リクエストあたり500件（500を超える値を指定しても、レスポンスには最大500件まで）</li>
+                <li>結果のページネーションが必要な場合、レスポンスに<code>paging</code>フィールドが存在します</li>
+                <li>この属性には、次のデータページを取得するためのURL（<code>next</code>）が含まれます</li>
+            </ul>
+
+            <h3>例</h3>
+            <div class="code-block">
+{
+  <span class="key">"data"</span>: {
+    <span class="comment">/* 結果がここに入ります */</span>
+  },
+  <span class="key">"paging"</span>: {
+    <span class="key">"next"</span>: <span class="string">"https://api-merchant.joom.com/api/v3/products/multi?after=after_token&limit=10"</span>
+  }
+}
+            </div>
+        </section>
+
+        <section id="errors" class="card">
+            <h2>APIエラー</h2>
+            <p>エラーが発生した場合、Joom APIはJSONレスポンスで特定のエラーデータを返します。</p>
+
+            <ul>
+                <li>HTTPステータスコード4xx（400、401、403、404など）のレスポンスにはエラー詳細が含まれます</li>
+                <li>HTTPステータスコード200のレスポンスにはエラー詳細は含まれません</li>
+                <li>HTTPステータスコード5xx（500など）のレスポンスには、役立つエラー詳細は含まれません</li>
+            </ul>
+
+            <h3>errorsフィールド</h3>
+            <p><code>errors</code>フィールドは、リクエスト処理中に発生したエラーの詳細の配列です。通常は1つのエラーですが、バッチ処理などでは複数の場合があります。</p>
+
+            <h4>リクエスト例</h4>
+            <div class="code-block">
+curl https://api-merchant.joom.com/api/v3/orders/multi?updatedFrom=invalid_date
+            </div>
+
+            <h4>レスポンス例</h4>
+            <div class="code-block">
+{
+  <span class="key">"errors"</span>: [
+    {
+      <span class="key">"code"</span>: <span class="string">"invalid_argument"</span>,
+      <span class="key">"field"</span>: <span class="string">"updatedFrom"</span>,
+      <span class="key">"message"</span>: <span class="string">"Invalid argument `updatedFrom`: expected date/time, got `invalid_date`"</span>
+    }
+  ]
+}
+            </div>
+            <p>このレスポンス例にはHTTPステータスコード400（Bad Request）も含まれます。</p>
+        </section>
+
+        <section id="data-formats" class="card">
+            <h2>データフォーマット</h2>
+
+            <h3>日付/時刻</h3>
+            <p>タイムスタンプはRFC3339形式の文字列で表現されます。</p>
+            <div class="code-block">
+<span class="comment">// 例</span>
+<span class="string">"2006-01-02T15:04:05Z"</span>
+            </div>
+            <p>特に記載がない限り、APIのすべての日時はUTCです。</p>
+            <p>クエリパラメータとして使用する場合、タイムスタンプはRFC3339形式および短縮形式（<code>2006-01-02T15:04:05</code>、<code>2006-01-02</code>）で受け付けられます。</p>
+
+            <h3>価格</h3>
+            <p>価格は小数点区切りにドットを使用した文字列で表現されます。</p>
+            <div class="code-block">
+<span class="comment">// 例：10.3 USD</span>
+<span class="string">"10.3"</span>
+            </div>
+            <p>通貨はISO 4217コードで別途指定されます。</p>
+            <div class="code-block">
+<span class="comment">// 例</span>
+<span class="string">"USD"</span>, <span class="string">"EUR"</span>, <span class="string">"RUB"</span>
+            </div>
+        </section>
+
+        <section id="rate-limits" class="card">
+            <h2>リクエストレート制限</h2>
+
+            <div class="highlight info">
+                <strong>基本ルール：</strong>
+                <ul>
+                    <li>レート制限はストアごと、分単位です（特に記載がない限り）</li>
+                    <li><strong>一般的なレート制限：2000 rpm</strong>（リクエスト/分）</li>
+                    <li>この制限は、特に記載されているものを除くすべてのエンドポイントで共有されます</li>
+                    <li>レート制限に達すると、期間終了まで該当エンドポイントはHTTPステータスコード429を返します</li>
+                </ul>
+            </div>
+
+            <h3>カスタム制限があるエンドポイント</h3>
+            <p>一度に複数のオブジェクトを返すエンドポイントはJoomのサーバーに負荷をかけるため、呼び出し頻度を下げる必要があります。これらは<strong>共有レート制限50 rpm</strong>です。</p>
+
+            <table>
+                <tr>
+                    <th>エンドポイント</th>
+                    <th>制限</th>
+                </tr>
+                <tr>
+                    <td><code>GET products/multi</code></td>
+                    <td><span class="badge warning">50 rpm（共有）</span></td>
+                </tr>
+                <tr>
+                    <td><code>GET orders/unfulfilled</code></td>
+                    <td><span class="badge warning">50 rpm（共有）</span></td>
+                </tr>
+                <tr>
+                    <td><code>GET orders/multi</code></td>
+                    <td><span class="badge warning">50 rpm（共有）</span></td>
+                </tr>
+            </table>
+
+            <h3>レスポンスヘッダー</h3>
+            <p>各APIレスポンスには、現在のレート制限状況を示す以下のヘッダーが含まれます。</p>
+
+            <table>
+                <tr>
+                    <th>ヘッダー名</th>
+                    <th>説明</th>
+                </tr>
+                <tr>
+                    <td><code>X-Rate-Limit-Limit</code></td>
+                    <td>分あたりの許可リクエスト数</td>
+                </tr>
+                <tr>
+                    <td><code>X-Rate-Limit-Reset</code></td>
+                    <td>現在のレート制限ウィンドウ終了までの残り秒数</td>
+                </tr>
+                <tr>
+                    <td><code>X-Rate-Limit-Remaining</code></td>
+                    <td>現在のレート制限ウィンドウ内の残りリクエスト数。制限到達時は0</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="oauth" class="card">
+            <h2>OAuth 2.0 認証</h2>
+            <p>OAuth 2.0認証を使用して、より良いセキュリティを提供します。認証されていない人や許可を得ていない人がAPIを通じてあなたのデータにアクセスすることはできません。</p>
+            <p>簡単に言えば、FacebookやWeChatアカウントでウェブサイトにログインする際と同じ安全な認証プロセスです。</p>
+
+            <h3>用語</h3>
             <table>
                 <tr>
                     <th>用語</th>
                     <th>説明</th>
                 </tr>
                 <tr>
-                    <td><strong>App/Client（アプリ/クライアント）</strong></td>
+                    <td><strong>App（アプリ）/ Client（クライアント）</strong></td>
                     <td>Joom上のマーチャントデータにアクセスしたいアプリケーション</td>
                 </tr>
                 <tr>
@@ -232,182 +579,407 @@
                     <td>Joomがアプリに発行する固有の文字列。ユーザーデータにアクセスする際の識別に使用</td>
                 </tr>
             </table>
+        </section>
 
-            <h3>認証リクエストの方法</h3>
-            <p>すべてのAPIリクエストにはアクセストークンが必要です。リクエストヘッダーにトークンを追加してください。</p>
+        <section id="auth-steps" class="card">
+            <h2>認証手順</h2>
 
-            <div class="code-block">
-<span class="comment">// リクエストヘッダーの例</span>
-Authorization: Bearer <span class="string">YOUR_ACCESS_TOKEN</span>
-Content-Type: application/json
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>アプリを認証しアクセスを許可</h4>
+                    <ol>
+                        <li>JoomプラットフォームのMerchant Panelでアプリを作成し、Client IDとSecretをコピー</li>
+                        <li>ユーザーを以下のURLに誘導（<code>{client_id}</code>をアプリのClient IDに置換）：
+                            <div class="code-block">https://api-merchant.joom.com/api/v2/oauth/authorize?client_id={client_id}</div>
+                        </li>
+                        <li>リンクをたどり、未ログインの場合はログイン</li>
+                        <li>「grant access」をクリックして許可を付与</li>
+                    </ol>
+                    <p class="highlight info">サンドボックスでの認証には、対応するホストアドレスを使用してください。</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>認証コードを受け取る</h4>
+                    <p>アプリに許可を付与すると、アプリ作成時に指定したリダイレクトURLにJoomがリダイレクトします。</p>
+                    <p>このリクエストのパラメータの1つが「Authorization Code（認証コード）」です。</p>
+                    <div class="code-block">https://example.redirect.uri.com?code={authorization_code}</div>
+                    <div class="highlight warning">
+                        <strong>重要：</strong>認証コードは<strong>5分後に期限切れ</strong>となり、<strong>1回のみ</strong>使用できます。
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>アクセストークンを取得</h4>
+                    <p>Joomがアプリを認証し、認証付与を検証して、有効な場合はアクセストークンを発行します。</p>
+                    <p>リクエストボディパラメータは<code>x-www-form-urlencoded</code> Content-Typeで送信してください。</p>
+
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <code>https://api-merchant.joom.com/api/v2/oauth/access_token</code>
+                    </div>
+
+                    <h4>リクエストボディ（application/x-www-form-urlencoded）</h4>
+                    <table>
+                        <tr><th>パラメータ</th><th>説明</th></tr>
+                        <tr><td><code>client_id</code></td><td>アプリのClient ID</td></tr>
+                        <tr><td><code>client_secret</code></td><td>アプリのClient Secret</td></tr>
+                        <tr><td><code>grant_type</code></td><td><code>authorization_code</code>を指定</td></tr>
+                        <tr><td><code>code</code></td><td>認証コード</td></tr>
+                        <tr><td><code>redirect_uri</code></td><td>OAuthアプリのリダイレクトURL</td></tr>
+                    </table>
+
+                    <h4>レスポンス（200）</h4>
+                    <div class="code-block">
+{
+  <span class="key">"code"</span>: <span class="number">0</span>,           <span class="comment">// 0は成功、それ以外は失敗</span>
+  <span class="key">"message"</span>: <span class="string">""</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"access_token"</span>: <span class="string">"your_access_token"</span>,
+    <span class="key">"expires_in"</span>: <span class="number">3600</span>,
+    <span class="key">"expiry_time"</span>: <span class="number">1234567890</span>,
+    <span class="key">"refresh_token"</span>: <span class="string">"your_refresh_token"</span>
+  }
+}
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>認証されたリクエストを行う</h4>
+                    <p>アプリはアクセストークンを提示してJoomから保護されたリソースをリクエストします。</p>
+                    <p>認証されたリクエストを行うには、リクエストヘッダーに以下を追加します：</p>
+                    <div class="code-block">Authorization: Bearer {access_token}</div>
+                    <p>Joomがアクセストークンを検証し、有効な場合はリクエストを処理します。</p>
+
+                    <div class="highlight info">
+                        <strong>ヒント：</strong>リクエストボディのパラメータとしてアクセストークンを追加することも可能です。
+                    </div>
+
+                    <h4>テスト用エンドポイント</h4>
+                    <div class="code-block">https://api-merchant.joom.com/api/v2/auth_test</div>
+                </div>
             </div>
         </section>
 
-        <section id="requests" class="card">
-            <h2>リクエストの基本</h2>
+        <section id="refresh-token" class="card">
+            <h2>トークンの更新</h2>
+            <p>完全なOAuthプロセスを再度行わずに新しいアクセストークンを取得するには、<code>refresh_token</code>リクエストを使用します。</p>
 
-            <h3>重要なルール</h3>
-            <ul>
-                <li><strong>HTTPS必須</strong>：すべてのリクエストはHTTPSで行う必要があります。HTTPでのリクエストは拒否されます。</li>
-                <li><strong>Content-Type</strong>：POSTエンドポイントでJSONボディを送信する場合、<code>Content-Type: application/json</code>ヘッダーが必要です。</li>
-                <li><strong>URLパラメータ</strong>：一部のエンドポイントはURLクエリパラメータを受け付けます。</li>
-            </ul>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>https://api-merchant.joom.com/api/v2/oauth/refresh_token</code>
+            </div>
 
-            <h3>リクエスト例</h3>
+            <h3>リクエストボディ（application/x-www-form-urlencoded）</h3>
+            <table>
+                <tr><th>パラメータ</th><th>説明</th></tr>
+                <tr><td><code>client_id</code></td><td>アプリのClient ID</td></tr>
+                <tr><td><code>client_secret</code></td><td>アプリのClient Secret</td></tr>
+                <tr><td><code>grant_type</code></td><td><code>refresh_token</code>を指定</td></tr>
+                <tr><td><code>refresh_token</code></td><td><code>/oauth/access_token</code>で取得したリフレッシュトークン</td></tr>
+            </table>
+
+            <h3>レスポンス</h3>
             <div class="code-block">
-<span class="comment">// cURLでのリクエスト例</span>
-curl -X GET "https://api-merchant.joom.com/api/v3/products" \
-  -H "Authorization: Bearer <span class="string">YOUR_ACCESS_TOKEN</span>" \
-  -H "Content-Type: application/json"
+{
+  <span class="key">"code"</span>: <span class="number">0</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"access_token"</span>: <span class="string">"new_access_token"</span>,
+    <span class="key">"expires_in"</span>: <span class="number">3600</span>,
+    <span class="key">"expiry_time"</span>: <span class="number">1234567890</span>,
+    <span class="key">"refresh_token"</span>: <span class="string">"new_refresh_token"</span>
+  }
+}
             </div>
         </section>
 
         <section id="products" class="card">
-            <h2>商品（Products）API</h2>
-            <p>商品の作成、更新、取得に関するエンドポイントです。</p>
+            <h2>商品（Products）</h2>
 
-            <h3>商品識別子について</h3>
-            <table>
-                <tr>
-                    <th>識別子</th>
-                    <th>説明</th>
-                    <th>生成元</th>
-                </tr>
-                <tr>
-                    <td><strong>Product SKU</strong></td>
-                    <td>商品の固有識別子（マーチャント全体で一意）</td>
-                    <td>マーチャント</td>
-                </tr>
-                <tr>
-                    <td><strong>Variant SKU</strong></td>
-                    <td>バリエーションの固有識別子（マーチャント全体で一意）</td>
-                    <td>マーチャント</td>
-                </tr>
-                <tr>
-                    <td><strong>Joom Product ID</strong></td>
-                    <td>Joomが発行する商品ID</td>
-                    <td>Joom</td>
-                </tr>
-                <tr>
-                    <td><strong>Joom Variant ID</strong></td>
-                    <td>Joomが発行するバリエーションID</td>
-                    <td>Joom</td>
-                </tr>
-            </table>
+            <h3>識別子について</h3>
+            <p><strong>Product SKU</strong>と<strong>Variant SKU</strong>は、マーチャント自身が生成する商品とバリアントの一意の識別子です。</p>
 
-            <div class="highlight">
-                <strong>ポイント：</strong> SKUのみを使用してすべての操作が可能ですが、Joom IDを使用することもできます。
-            </div>
-
-            <h3>商品のバージョン</h3>
-            <p>各商品には2つのバージョンがあります：</p>
             <ul>
-                <li><strong>現行バージョン（Current）</strong>：最新の変更を反映（下書き状態）</li>
-                <li><strong>承認済みバージョン（Approved）</strong>：公開されているバージョン</li>
+                <li>各Product SKUは、マーチャントのすべてのProduct SKUの中で一意である必要があります</li>
+                <li>各Variant SKUは、マーチャントのすべてのVariant SKUの中で一意である必要があります</li>
+                <li>Product SKUとVariant SKUは同じでも構いません（例：商品に1つのバリアントしかない場合、同じSKUを付けることができます）</li>
             </ul>
 
-            <h3>主要エンドポイント</h3>
-            <div class="endpoint">
-                <span class="method post">POST</span>
-                <code>/products</code>
-                <p>新しい商品を作成します。<span class="badge required">Store ID 必須</span></p>
+            <p><strong>Joom Product ID</strong>と<strong>Joom Variant ID</strong>は、Joomが生成する商品とバリアントの一意の識別子です（参考情報として表示されます）。</p>
+
+            <div class="highlight info">
+                <strong>ポイント：</strong>商品やバリアントに対するすべての操作はSKUのみで実行できます。ただし、Joom IDを使用することも可能です。
             </div>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                <code>/products</code>
-                <p>商品一覧を取得します。</p>
+
+            <div class="highlight warning">
+                <strong>重要：</strong>新しい商品を作成する際は、<strong>Joom Store ID</strong>を指定する必要があります。
             </div>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                <code>/products/{id}</code>
-                <p>特定の商品詳細を取得します。</p>
-            </div>
-            <div class="endpoint">
-                <span class="method put">PUT</span>
-                <code>/products/{id}</code>
-                <p>商品情報を更新します。</p>
-            </div>
+        </section>
+
+        <section id="product-states" class="card">
+            <h2>商品の状態（Product States）</h2>
+            <p>各商品には2つのバージョンがあります：最新の変更を反映した<strong>現行バージョン</strong>（下書き的なもの）と、<strong>承認済み（公開）バージョン</strong>です。顧客に表示されるのは公開バージョンのみです。</p>
+
+            <ul>
+                <li><code>hasActiveVersion</code>：商品に現在顧客に公開されているバージョンがあるかどうかを示します</li>
+                <li><code>state</code>：現行バージョンの状態を示します</li>
+            </ul>
+
+            <table>
+                <tr>
+                    <th>状態</th>
+                    <th>説明</th>
+                </tr>
+                <tr>
+                    <td><span class="badge success">active</span></td>
+                    <td>このバージョンの商品は承認済みでアクティブ（顧客に公開中）</td>
+                </tr>
+                <tr>
+                    <td><span class="badge warning">warning</span></td>
+                    <td>このバージョンの商品はアクティブだが、マーチャントの注意が必要な場合がある</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">pending</span></td>
+                    <td>このバージョンの商品は非アクティブで、Joomの審査待ち。マーチャントのアクションは不要。古い承認済みバージョンがアクティブな場合がある</td>
+                </tr>
+                <tr>
+                    <td><span class="badge error">rejected</span></td>
+                    <td>このバージョンの商品は非アクティブ。マーチャントは問題を修正する必要がある。古い承認済みバージョンがアクティブな場合がある</td>
+                </tr>
+                <tr>
+                    <td><span class="badge error">disabledByJoom</span></td>
+                    <td>商品はJoomによって完全に無効化され、顧客には非公開。商品のストアがJoomによって無効化された場合に発生</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">disabledByMerchant</span></td>
+                    <td>商品はマーチャントによって完全に無効化され、顧客には非公開。商品のストアがマーチャントによって無効化された場合にも発生</td>
+                </tr>
+                <tr>
+                    <td><span class="badge warning">locked</span></td>
+                    <td>ロック解除されるまで、商品へのすべての変更は延期される。商品がプロモーションに参加している場合に発生。古い承認済みバージョンがアクティブな場合がある</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">archived</span></td>
+                    <td>商品は削除済み。通常、削除された商品はマーチャントには表示されないが、技術的な遅延によりAPIに表示される場合がある。この状態の商品は存在しないものとして無視してよい</td>
+                </tr>
+            </table>
         </section>
 
         <section id="orders" class="card">
-            <h2>注文（Orders）API</h2>
+            <h2>注文（Orders）</h2>
             <p>注文の取得、発送処理に関するエンドポイントです。</p>
 
-            <h3>配送方法</h3>
+            <div class="highlight info">
+                <strong>注意：</strong>注文の返品は、特定のマーチャントと特定の顧客の国でのみ利用可能です。
+            </div>
+        </section>
+
+        <section id="order-states" class="card">
+            <h2>注文の状態（Order States）</h2>
+
             <table>
                 <tr>
-                    <th>種類</th>
+                    <th>状態</th>
                     <th>説明</th>
-                    <th>手順</th>
                 </tr>
                 <tr>
-                    <td><strong>オフライン配送</strong></td>
-                    <td>許可された配送業者で発送</td>
-                    <td>
-                        1. 商品を発送<br>
-                        2. offline fulfill エンドポイントで追跡番号を送信
-                    </td>
+                    <td><span class="badge success">approved</span></td>
+                    <td>注文はJoomによって承認され、マーチャントのアクションを待っている</td>
                 </tr>
                 <tr>
-                    <td><strong>オンライン配送</strong></td>
-                    <td>Joom Logistics等を利用</td>
-                    <td>
-                        1. online fulfill エンドポイントで配送リクエスト<br>
-                        2. shipping label エンドポイントでラベル取得<br>
-                        3. 商品を発送
-                    </td>
+                    <td><span class="badge">fulfilledOnline</span></td>
+                    <td>注文はマーチャントによってオンライン発送完了としてマークされた。配送業者（例：Joom Logistics）によってまだ出荷済みとしてマークされていない。時間内に出荷されない場合、キャンセルされる可能性がある</td>
+                </tr>
+                <tr>
+                    <td><span class="badge success">shipped</span></td>
+                    <td>注文は出荷済み。マーチャント（オフライン配送）またはJoom Logistics（オンライン配送）によって出荷された</td>
+                </tr>
+                <tr>
+                    <td><span class="badge error">cancelled</span></td>
+                    <td>注文はマーチャントの責任でキャンセルされた。マーチャントの負担で返金される</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">paidByJoomRefund</span></td>
+                    <td>注文はJoomによってキャンセルされた。マーチャントは引き続き注文の支払いを受け取る</td>
+                </tr>
+                <tr>
+                    <td><span class="badge warning">returnInitiated</span></td>
+                    <td>顧客が注文の返品を決定した。注文はマーチャントに返送済み</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">returnExpired</span></td>
+                    <td>返品された注文が期限内に届かなかった。返金はない</td>
+                </tr>
+                <tr>
+                    <td><span class="badge warning">returnArrived</span></td>
+                    <td>返品された注文がマーチャントに届いた。マーチャントはJoom Merchant Panel（APIでは利用不可）で返品を完了または拒否する必要がある</td>
+                </tr>
+                <tr>
+                    <td><span class="badge success">returnCompleted</span></td>
+                    <td>マーチャントが返品を受け入れた。マーチャントの負担で注文が返金される</td>
+                </tr>
+                <tr>
+                    <td><span class="badge">returnDeclined</span></td>
+                    <td>マーチャントが返品を拒否した。返金はない</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="shipping" class="card">
+            <h2>商品の配送先設定</h2>
+            <p>このAPIを使用すると、特定の商品バリアント（または商品）の特定の国への配送価格を設定できます。</p>
+
+            <h3>デフォルト動作</h3>
+            <p>デフォルトでは、倉庫で正の在庫を持つすべての商品バリアントは、その倉庫用にカスタマイズされたすべての国に、倉庫追加時に設定された配送価格で出荷されます。このAPIを使用すると、特定のバリアント-国ペアに対してこれらのデフォルトを上書きできます。</p>
+
+            <h3>倉庫の使用</h3>
+            <p>デフォルトでは、すべての在庫と配送価格はデフォルト倉庫に設定されます。つまり、商品を作成・更新すると、バリアントの在庫と<code>shippingPrice</code>は内部的にデフォルト倉庫に設定されます。デフォルト倉庫の配送国は、Merchant Panelの設定で決定されます。</p>
+
+            <div class="highlight info">
+                <strong>シンプルな使い方：</strong>デフォルト倉庫で作業する場合、倉庫のことを考える必要はありません！配送先APIでデフォルト倉庫を使用する場合、すべての<code>warehouseId</code>と<code>warehouseLabel</code>フィールドを省略できます。
+            </div>
+
+            <p>カスタム倉庫を設定して、特定の商品を特定の国に出荷し、これらの倉庫で異なる在庫量を持つことができます。カスタム（非デフォルト）倉庫で作業する場合は、<code>warehouseId</code>または<code>warehouseLabel</code>を指定して倉庫を識別する必要があります。</p>
+        </section>
+
+        <section id="warehouses" class="card">
+            <h2>倉庫での商品管理</h2>
+
+            <div class="highlight">
+                <strong>注意：</strong>国際倉庫機能を使用していない場合、このセクションと対応するエンドポイントはスキップできます。
+            </div>
+
+            <p>このAPIを使用すると、国際倉庫での商品バリアントの在庫を設定し、これらの倉庫からのバリアントのデフォルト配送価格を設定できます。</p>
+
+            <h3>デフォルト倉庫</h3>
+            <p>デフォルトでは、すべての在庫と配送価格はデフォルト倉庫に設定されます。商品を作成・更新すると、バリアントの<code>inventory</code>と<code>shippingPrice</code>は内部的にデフォルト倉庫に設定されます。</p>
+            <p>このセクションのエンドポイントをデフォルト倉庫で使用することもできますが、必須ではありません。ここで説明するエンドポイントは通常の商品作成・更新よりも複雑であり、<strong>複数の倉庫を持つマーチャントのみ</strong>が使用すべきです。</p>
+        </section>
+
+        <section id="migration" class="card">
+            <h2>API v2からの移行</h2>
+
+            <h3>なぜ移行するのか？</h3>
+            <ul>
+                <li>API v3はより優れています！</li>
+                <li>API v2のサポートは間もなく終了します</li>
+                <li>すべての新機能はAPI v3にのみ追加されます</li>
+                <li>API v3は商品の削除やストア間の移動などの独自機能を提供</li>
+                <li>API v3は商品やその他のエンティティを操作するより便利なメソッドを提供</li>
+                <li>API v3はJSONを受け付け、返します</li>
+            </ul>
+
+            <h3>主な違い</h3>
+
+            <h4>命名規則：キャメルケース vs スネークケース</h4>
+            <table>
+                <tr>
+                    <th>API v3</th>
+                    <th>API v2</th>
+                </tr>
+                <tr>
+                    <td><code>mainImage</code>（キャメルケース）</td>
+                    <td><code>main_image</code>（スネークケース）</td>
                 </tr>
             </table>
 
-            <div class="highlight">
-                <strong>注意：</strong> オンライン配送は特定の発送元・配送先国、および特定の商品タイプでのみ利用可能です。一部のケースではオンライン配送が必須となります。
-            </div>
+            <h4>Content-Type</h4>
+            <table>
+                <tr>
+                    <th>API v3</th>
+                    <th>API v2</th>
+                </tr>
+                <tr>
+                    <td><code>application/json</code></td>
+                    <td><code>application/x-www-form-urlencoded</code></td>
+                </tr>
+            </table>
 
-            <h3>主要エンドポイント</h3>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                <code>/orders</code>
-                <p>注文一覧を取得します。</p>
+            <h4>API v3のJSONリクエスト例</h4>
+            <div class="code-block">
+{
+  <span class="key">"name"</span>: <span class="string">"My Product Name"</span>,
+  <span class="key">"brand"</span>: <span class="string">"My Brand"</span>,
+  <span class="key">"variants"</span>: [
+    {
+      <span class="key">"sku"</span>: <span class="string">"Variant1"</span>,
+      <span class="key">"shippingWeight"</span>: <span class="number">0.3</span>
+    },
+    {
+      <span class="key">"sku"</span>: <span class="string">"Variant2"</span>,
+      <span class="key">"shippingWeight"</span>: <span class="number">0.35</span>
+    }
+  ]
+}
             </div>
-            <div class="endpoint">
-                <span class="method get">GET</span>
-                <code>/orders/{id}</code>
-                <p>特定の注文詳細を取得します。</p>
-            </div>
-            <div class="endpoint">
-                <span class="method post">POST</span>
-                <code>/orders/{id}/fulfill/offline</code>
-                <p>オフライン配送で注文を発送処理します。</p>
-            </div>
-            <div class="endpoint">
-                <span class="method post">POST</span>
-                <code>/orders/{id}/fulfill/online</code>
-                <p>オンライン配送で注文を発送処理します。</p>
-            </div>
-            <div class="endpoint">
-                <span class="method post">POST</span>
-                <code>/orders/{id}/modify-tracking</code>
-                <p>発送済み注文の追跡情報を変更します。</p>
-            </div>
+            <p>JSON形式はより明確で読みやすく、フィールドは型付けされ、複雑なオブジェクトや配列がサポートされています。</p>
+
+            <h4>商品とバリアントの操作</h4>
+            <p>API v3では、商品を扱うエンドポイントはすべてのバリアントを含む商品全体を操作します。例えば、1回のAPI呼び出しで商品とそのすべてのバリアントを更新できます。バリアント用の個別のエンドポイントはありません。</p>
+
+            <h3>移行方法</h3>
+            <ol>
+                <li>API v2とAPI v3のドキュメントを使用して、使用しているすべてのエンドポイントを確認。各API v2エンドポイントには対応するAPI v3エンドポイントがある</li>
+                <li>フィールド名の対応を確認。複数単語の名前はスネークケースからキャメルケースに変更</li>
+                <li>API v3で追加された新しいフィールドを確認。使用したい場合がある</li>
+                <li>POSTエンドポイントのフォーマットをJSONに変更</li>
+                <li><strong>商品の作成と更新の変更に特に注意：</strong>1つの商品の複数のバリアントを変更する場合は、API v3では1回の呼び出しで行う。時間とレート制限を節約できる</li>
+                <li>API v2でPOST呼び出しの結果を確認するためにGET呼び出しを行っていた場合、API v3のほとんどのPOSTエンドポイントは変更されたエンティティを返すため、2回目の呼び出しを省略できる</li>
+            </ol>
+
+            <h3>API v2に残るもの</h3>
+            <p>認証エンドポイントはまだAPI v3に導入されていません。API v2の一部を使用していなかった場合は、API v3経由で統合してください。</p>
         </section>
 
-        <section class="card">
-            <h2>追加リソース</h2>
-            <h3>公式ドキュメント</h3>
+        <section id="sandbox" class="card">
+            <h2>サンドボックス</h2>
+            <p>Joomは特別なサンドボックス環境を提供しており、本番環境に移行する前にAPIとWebインターフェースをテスト・試用できます。</p>
+
+            <div class="highlight info">
+                <strong>サンドボックスアカウントの取得：</strong>KAMまたはJoomマーチャントサポートに連絡してください。
+            </div>
+
+            <h3>サンドボックスでできること</h3>
             <ul>
-                <li><a href="https://merchant.joom.com/docs/api/v3" target="_blank">Joom Merchant API v3 公式ページ</a></li>
-                <li><a href="https://merchant.joom.com/docs/api" target="_blank">API ドキュメント トップ</a></li>
+                <li>商品を作成</li>
+                <li>さまざまな方法で商品の取得・更新を試す</li>
+                <li>一部の商品を承認・カテゴリ分類</li>
+                <li>承認・カテゴリ分類した商品でテスト注文を作成（未承認・未カテゴリ分類の商品、在庫切れのバリアントでは注文を作成できません）</li>
+                <li>さまざまな方法で作成した注文の取得、発送、キャンセルを試す</li>
             </ul>
 
-            <h3>サポートが必要な場合</h3>
-            <p>APIの詳細な仕様やエラーハンドリングについては、公式ドキュメントを参照してください。</p>
+            <h3>サンドボックス専用機能</h3>
+            <p>サンドボックス専用に設計され、本番環境では使用できない機能があります：</p>
+            <ul>
+                <li>商品の承認</li>
+                <li>商品のカテゴリ分類</li>
+                <li>注文の作成</li>
+            </ul>
+
+            <div class="highlight warning">
+                <strong>注意：</strong>サンドボックス専用のエンドポイントは、通常のエンドポイントとは異なり、マーチャントのSKUではなくJoom IDで操作します。
+            </div>
+
+            <h3>古いバージョンのサンドボックス</h3>
+            <p>部分的にサポートされている古いバージョンのサンドボックスがあります。これらのバージョンに既に登録されている場合は、引き続き使用できます。ただし、新機能は古いサンドボックスにはデプロイされません。最新機能との統合をテストするには、最新のサンドボックスバージョンを使用する必要があります。</p>
+            <p>サンドボックスバージョンは<strong>3ヶ月間</strong>サポートされます。作成月は名前（sandbox-YYYYMM）で確認できます。統合の構築とテストには3ヶ月で十分と想定しています。</p>
+            <p>新しいサンドボックスバージョンに移行する場合、アカウントとデータは移行されず、新しいアカウントが必要になります。</p>
         </section>
 
         <footer>
-            <p>このガイドは Joom Merchant API v3 のドキュメントを基に作成されています。</p>
-            <p>最新情報は<a href="https://merchant.joom.com/docs/api/v3" target="_blank">公式ドキュメント</a>をご確認ください。</p>
-            <p style="margin-top: 20px; font-size: 0.9em;">作成日: 2025年11月27日</p>
+            <p>このガイドは <a href="https://merchant.joom.com/docs/api/v3" target="_blank">Joom Merchant API v3</a> のドキュメントを基に作成されています。</p>
+            <p>最新情報は<a href="https://merchant.joom.com/docs/api" target="_blank">公式ドキュメント</a>をご確認ください。</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">最終更新: 2025年11月27日</p>
         </footer>
-    </div>
+    </main>
 </body>
 </html>
