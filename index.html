@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joom Merchant API v3 ガイド（日本語版）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h2 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        .card h3 {
+            color: #764ba2;
+            font-size: 1.2em;
+            margin: 20px 0 10px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .endpoint code {
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: #d63384;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+        .method.get { background: #28a745; color: white; }
+        .method.post { background: #007bff; color: white; }
+        .method.put { background: #ffc107; color: #333; }
+        .method.delete { background: #dc3545; color: white; }
+        ul {
+            margin: 15px 0 15px 25px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .highlight {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+        .code-block .comment { color: #68d391; }
+        .code-block .string { color: #fbd38d; }
+        .code-block .key { color: #90cdf4; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .badge.required { background: #fee2e2; color: #dc2626; }
+        .badge.optional { background: #dbeafe; color: #2563eb; }
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            opacity: 0.9;
+        }
+        footer a {
+            color: white;
+        }
+        .nav {
+            position: sticky;
+            top: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav a:hover {
+            color: #764ba2;
+        }
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8em; }
+            .nav { display: none; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Joom Merchant API v3</h1>
+            <p>マーチャント向けAPI 日本語ガイド</p>
+        </header>
+
+        <nav class="nav">
+            <a href="#overview">概要</a>
+            <a href="#auth">認証</a>
+            <a href="#requests">リクエスト</a>
+            <a href="#products">商品</a>
+            <a href="#orders">注文</a>
+        </nav>
+
+        <section id="overview" class="card">
+            <h2>概要</h2>
+            <p>Joom Merchant API v3は、マーチャントや開発者がJoomプラットフォームと連携するためのAPIです。このAPIを使用することで、Web版Joom for Merchantsの機能をプログラムから完全に操作できます。</p>
+
+            <div class="highlight">
+                <strong>主な用途：</strong>
+                <ul>
+                    <li>商品の作成・管理</li>
+                    <li>注文の処理・発送</li>
+                    <li>ERPシステムとの連携</li>
+                    <li>在庫管理の自動化</li>
+                </ul>
+            </div>
+
+            <h3>ベースURL</h3>
+            <div class="endpoint">
+                <strong>本番環境：</strong><br>
+                <code>https://api-merchant.joom.com/api/v3</code>
+            </div>
+            <p>※サンドボックス環境については公式ドキュメントを参照してください。</p>
+        </section>
+
+        <section id="auth" class="card">
+            <h2>OAuth 2.0 認証</h2>
+            <p>JoomはOAuth 2.0認証を採用しており、セキュアなAPI連携を実現しています。これはFacebookやWeChatなどでログインする際と同じ認証プロセスです。</p>
+
+            <h3>主要な用語</h3>
+            <table>
+                <tr>
+                    <th>用語</th>
+                    <th>説明</th>
+                </tr>
+                <tr>
+                    <td><strong>App/Client（アプリ/クライアント）</strong></td>
+                    <td>Joom上のマーチャントデータにアクセスしたいアプリケーション</td>
+                </tr>
+                <tr>
+                    <td><strong>User（ユーザー）</strong></td>
+                    <td>Joomにマーチャントアカウントを持つ人。アプリにデータアクセスの許可を与える人</td>
+                </tr>
+                <tr>
+                    <td><strong>Access Token（アクセストークン）</strong></td>
+                    <td>Joomがアプリに発行する固有の文字列。ユーザーデータにアクセスする際の識別に使用</td>
+                </tr>
+            </table>
+
+            <h3>認証リクエストの方法</h3>
+            <p>すべてのAPIリクエストにはアクセストークンが必要です。リクエストヘッダーにトークンを追加してください。</p>
+
+            <div class="code-block">
+<span class="comment">// リクエストヘッダーの例</span>
+Authorization: Bearer <span class="string">YOUR_ACCESS_TOKEN</span>
+Content-Type: application/json
+            </div>
+        </section>
+
+        <section id="requests" class="card">
+            <h2>リクエストの基本</h2>
+
+            <h3>重要なルール</h3>
+            <ul>
+                <li><strong>HTTPS必須</strong>：すべてのリクエストはHTTPSで行う必要があります。HTTPでのリクエストは拒否されます。</li>
+                <li><strong>Content-Type</strong>：POSTエンドポイントでJSONボディを送信する場合、<code>Content-Type: application/json</code>ヘッダーが必要です。</li>
+                <li><strong>URLパラメータ</strong>：一部のエンドポイントはURLクエリパラメータを受け付けます。</li>
+            </ul>
+
+            <h3>リクエスト例</h3>
+            <div class="code-block">
+<span class="comment">// cURLでのリクエスト例</span>
+curl -X GET "https://api-merchant.joom.com/api/v3/products" \
+  -H "Authorization: Bearer <span class="string">YOUR_ACCESS_TOKEN</span>" \
+  -H "Content-Type: application/json"
+            </div>
+        </section>
+
+        <section id="products" class="card">
+            <h2>商品（Products）API</h2>
+            <p>商品の作成、更新、取得に関するエンドポイントです。</p>
+
+            <h3>商品識別子について</h3>
+            <table>
+                <tr>
+                    <th>識別子</th>
+                    <th>説明</th>
+                    <th>生成元</th>
+                </tr>
+                <tr>
+                    <td><strong>Product SKU</strong></td>
+                    <td>商品の固有識別子（マーチャント全体で一意）</td>
+                    <td>マーチャント</td>
+                </tr>
+                <tr>
+                    <td><strong>Variant SKU</strong></td>
+                    <td>バリエーションの固有識別子（マーチャント全体で一意）</td>
+                    <td>マーチャント</td>
+                </tr>
+                <tr>
+                    <td><strong>Joom Product ID</strong></td>
+                    <td>Joomが発行する商品ID</td>
+                    <td>Joom</td>
+                </tr>
+                <tr>
+                    <td><strong>Joom Variant ID</strong></td>
+                    <td>Joomが発行するバリエーションID</td>
+                    <td>Joom</td>
+                </tr>
+            </table>
+
+            <div class="highlight">
+                <strong>ポイント：</strong> SKUのみを使用してすべての操作が可能ですが、Joom IDを使用することもできます。
+            </div>
+
+            <h3>商品のバージョン</h3>
+            <p>各商品には2つのバージョンがあります：</p>
+            <ul>
+                <li><strong>現行バージョン（Current）</strong>：最新の変更を反映（下書き状態）</li>
+                <li><strong>承認済みバージョン（Approved）</strong>：公開されているバージョン</li>
+            </ul>
+
+            <h3>主要エンドポイント</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/products</code>
+                <p>新しい商品を作成します。<span class="badge required">Store ID 必須</span></p>
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/products</code>
+                <p>商品一覧を取得します。</p>
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/products/{id}</code>
+                <p>特定の商品詳細を取得します。</p>
+            </div>
+            <div class="endpoint">
+                <span class="method put">PUT</span>
+                <code>/products/{id}</code>
+                <p>商品情報を更新します。</p>
+            </div>
+        </section>
+
+        <section id="orders" class="card">
+            <h2>注文（Orders）API</h2>
+            <p>注文の取得、発送処理に関するエンドポイントです。</p>
+
+            <h3>配送方法</h3>
+            <table>
+                <tr>
+                    <th>種類</th>
+                    <th>説明</th>
+                    <th>手順</th>
+                </tr>
+                <tr>
+                    <td><strong>オフライン配送</strong></td>
+                    <td>許可された配送業者で発送</td>
+                    <td>
+                        1. 商品を発送<br>
+                        2. offline fulfill エンドポイントで追跡番号を送信
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>オンライン配送</strong></td>
+                    <td>Joom Logistics等を利用</td>
+                    <td>
+                        1. online fulfill エンドポイントで配送リクエスト<br>
+                        2. shipping label エンドポイントでラベル取得<br>
+                        3. 商品を発送
+                    </td>
+                </tr>
+            </table>
+
+            <div class="highlight">
+                <strong>注意：</strong> オンライン配送は特定の発送元・配送先国、および特定の商品タイプでのみ利用可能です。一部のケースではオンライン配送が必須となります。
+            </div>
+
+            <h3>主要エンドポイント</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/orders</code>
+                <p>注文一覧を取得します。</p>
+            </div>
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/orders/{id}</code>
+                <p>特定の注文詳細を取得します。</p>
+            </div>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/orders/{id}/fulfill/offline</code>
+                <p>オフライン配送で注文を発送処理します。</p>
+            </div>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/orders/{id}/fulfill/online</code>
+                <p>オンライン配送で注文を発送処理します。</p>
+            </div>
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/orders/{id}/modify-tracking</code>
+                <p>発送済み注文の追跡情報を変更します。</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>追加リソース</h2>
+            <h3>公式ドキュメント</h3>
+            <ul>
+                <li><a href="https://merchant.joom.com/docs/api/v3" target="_blank">Joom Merchant API v3 公式ページ</a></li>
+                <li><a href="https://merchant.joom.com/docs/api" target="_blank">API ドキュメント トップ</a></li>
+            </ul>
+
+            <h3>サポートが必要な場合</h3>
+            <p>APIの詳細な仕様やエラーハンドリングについては、公式ドキュメントを参照してください。</p>
+        </section>
+
+        <footer>
+            <p>このガイドは Joom Merchant API v3 のドキュメントを基に作成されています。</p>
+            <p>最新情報は<a href="https://merchant.joom.com/docs/api/v3" target="_blank">公式ドキュメント</a>をご確認ください。</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">作成日: 2025年11月27日</p>
+        </footer>
+    </div>
+</body>
+</html>
